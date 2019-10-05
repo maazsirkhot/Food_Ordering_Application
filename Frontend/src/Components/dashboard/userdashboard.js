@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import cookie from 'react-cookies';
+import cookie, { setRawCookie } from 'react-cookies';
 import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
@@ -10,13 +10,14 @@ class UserDashboard extends Component{
     constructor(props){
         super(props);
         this.state = {
-            search : "",
+            restname : "",
             searchResults : [],
             itemname : "",
             searchCheck : "false"
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.restaurantpage = this.restaurantpage.bind(this);
     }
 
     changeHandler = (e) => {
@@ -54,6 +55,14 @@ class UserDashboard extends Component{
         }
     }
 
+    restaurantpage = (e) => {
+        e.preventDefault();
+        //console.log(e.target.value);
+        this.setState({
+            restname : e.target.value
+        })
+    }
+
 
     
     render(){
@@ -62,28 +71,36 @@ class UserDashboard extends Component{
                     <tr>
                         <td>{result.rest_name}</td>
                         <td>{result.cuisine}</td>
-                        <td value={result.rest_name}><button class="btn btn-danger">Go to Restaurant</button></td>
+                        <td><button value={result.rest_name} onClick={this.restaurantpage} class="btn btn-danger">View Restaurant</button></td>
                     </tr>
                 );
         });
 
+        
+
+        let redirectVar = null;
+        if(this.state.restname != ""){
+            localStorage.setItem('restname', this.state.restname);
+            redirectVar = <Redirect to = {{pathname: '/ViewRestaurant', state: { restname: this.state.restname }}}/>
+        }
+
         return(
             <div>
             <NavBarLogin />
+            {redirectVar}
             <div class="vertical-nav bg-danger" id="sidebar">
             <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Dashboard</p>
             <ul class="nav flex-column bg-white mb-0">
                 <li class="nav-item">
-                    <a href="#" class="nav-link text-dark font-italic bg-light">
+                    <a href="/UserProfile" class="nav-link text-dark font-italic bg-light">
                     <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Profile
-                    </a></li>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link text-dark font-italic bg-light">
                     <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Past Orders
                     </a></li> 
             </ul>
-
-  
             </div>
             <div class="page-content p-5" id="content">
             <div class="input-group mb-3">
@@ -105,6 +122,7 @@ class UserDashboard extends Component{
                         </tbody>
                 </table>
             </div>
+
             </div>
         )
     }

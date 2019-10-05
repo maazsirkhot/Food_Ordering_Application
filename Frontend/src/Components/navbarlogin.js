@@ -18,7 +18,7 @@ class NavBarLogin extends Component{
         this.setState({
             user : username
         })
-        console.log("Cookie Name : " + this.state.user);
+        //console.log("Cookie Name : " + this.state.user);
     }
 
     handleLogout = () => {
@@ -29,15 +29,24 @@ class NavBarLogin extends Component{
 
     render() {
         let redirectVar = null;
+        let dashboard = null;
         if (!cookie.load("cookie")) {
             redirectVar = <Redirect to="/" />;
+        } else {
+            if(cookie.load("cookie") == "ownercookie")
+                dashboard = "/OwnerDashboard"
+            else{
+                dashboard = "/UserDashboard"
+            }
         }
+
+        
         return (
             <div>
                 {/* {redirectVar} */}
                 <nav class="navbar navbar-expand-sm bg-danger navbar-dark fixed-top">
                 <div class="container-fluid">
-                <button type="button" class="btn btn-danger">Home</button>
+                <Link to={dashboard}><button type="button" class="btn btn-danger">Home</button></Link>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="nav navbar-nav ml-auto">
                     <li class="nav-item dropdown">

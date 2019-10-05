@@ -4,19 +4,71 @@ import {Redirect} from 'react-router';
 import NavBar from "../navbar";
 import './ownerlogin.css';
 import { connect } from 'react-redux'; 
+import axios from 'axios';
 
 
 class OwnerLogin extends Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            username : "",
+            password : "",
+            logincheck : ""
+        }
+        this.changeHandler = this.changeHandler.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+    }
 
+    changeHandler = (e) => {
+        this.setState({
+            [e.target.name] : e.target.value
+        })
+    }
+
+    onSubmit(e){
+        e.preventDefault();
+        if (this.state.username == "" || this.state.password == "") {
+            alert("Username and Password cannot be empty");
+        }
+        else {
+            const data = {
+                username : this.state.username,
+                password : this.state.password
+            }
+            axios.defaults.withCredentials = true;
+
+            axios.post('http://localhost:3001/loginOwner', data)
+            .then(response => {
+                console.log("Response Status: " + response.status);
+                if(response.status === 200){
+                    this.setState({
+                        logincheck : true
+                    })
+                } else {
+                    this.setState({
+                        logincheck : false
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({
+                    logincheck : false
+                })
+                alert("Login Failed. Please try again!");
+            })
+        }
+    }
 
     render() {
         let redirectVar = null;
-        if(this.props.signinownerstatus){
-            redirectVar = <Redirect to= "/OwnerProfile"/>
+        if (this.state.logincheck == "true" || cookie.load("cookie")) {
+            redirectVar = <Redirect to="/OwnerDashboard" />;
         }
+
         return (
             <div>
-            {redirectVar}
+                {redirectVar}
                 <div class="container">
                 <div class="row">
                 <div class="col-lg-10 col-xl-9 mx-auto">
@@ -28,16 +80,16 @@ class OwnerLogin extends Component{
                     
                     
                     <div class="form-label-group">
-                    <input type="email" id="owneremail" class="form-control" placeholder="Email address" required/>
+                    <input type="email" name = "username" id="owneremail" onChange = {this.changeHandler} class="form-control" placeholder="Email address" required/>
                     <label for="owneremail">Email address</label>
                     </div>
                     <hr/>
                     <div class="form-label-group">
-                    <input type="password" id="password"class="form-control" placeholder="Password" required/>
+                    <input type="password" name = "password" id="password" onChange = {this.changeHandler} class="form-control" placeholder="Password" required/>
                     <label for="password">Password</label>
                     </div>              
                     
-                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Login</button>
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" onClick = {this.onSubmit} type="submit">Login</button>
 
                 </form>
                 </div>

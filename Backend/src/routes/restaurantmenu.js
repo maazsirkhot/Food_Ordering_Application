@@ -3,11 +3,25 @@ var pool = require('../helpers/pool');
 var router = express.Router();
 var crypt = require('../helpers/passwordEncryption');
 
-router.route('/UserDashboard/:restname').get(function(req, res){
+router.route('/GetMenu').post(function(req, res){
     console.log("Inside Menu");
-    var rest_name = req.params.restname;
+    var rest_name = req.body.restname;
     console.log(rest_name);
     getMenuQuery = 'SELECT * from items WHERE rest_name = ?';
+    allSections = [];
+    eachSection = {
+        section : "",
+        items : []
+    }
+
+    arraySearch = (sect, arr) => {
+        for(i = 0; i < arr.length; i++){
+            if(arr[i].section == sect)
+                return i;
+        }
+        return -1;
+    }
+
     pool.query(getMenuQuery, [rest_name], (err, result) => {
         if(err){
             console.log("Database error occurred");
@@ -15,8 +29,32 @@ router.route('/UserDashboard/:restname').get(function(req, res){
         }
         else{
             if(result.length > 0){
-                console.log(result);
-                res.status(200).json(result);
+
+                for(item of result){
+
+                    sectNo = arraySearch(item.section, allSections);
+                    if(sectNo != -1){
+                        var items = {
+                            itemname : item.itemname,
+                            itemdescription : item.itemdescription,
+                            itemprice : item.itemprice
+                        }
+                        allSections[sectNo].items.push(items);
+                    }
+                    else{
+                        allSections.push({
+                            section : item.section,
+                            items : [items = {
+                                itemname : item.itemname,
+                                itemdescription : item.itemdescription,
+                                itemprice : item.itemprice
+                            }]
+                        })
+                    }
+
+                }
+                console.log(allSections);
+                res.status(200).json(allSections);
             } else {
                 console.log("No Items Found");
                 res.status(400).json({responseMessage: 'Menu not available'});
@@ -27,16 +65,17 @@ router.route('/UserDashboard/:restname').get(function(req, res){
 
 router.route('/updateMenu').post(function(req, res){
     console.log("Inside Update Menu");
-        itemname = req.body.itemname,
-        itemdescription = req.body.itemdescription,
-        rest_name = req.body.restname,
-        itemprice = req.body.itemprice,
-        itemstatus = req.body.itemstatus,
-        newitemname = req.body.newitemname
-    
+        var itemname = req.body.itemname;
+        var itemdescription = req.body.itemdescription;
+        var rest_name = req.body.restname;
+        var itemprice = req.body.itemprice;
+        var itemstatus = req.body.itemstatus;
+        var newitemname = req.body.newitemname;
+        var section = req.body.section;
+
     if(itemstatus == 'NEW'){
-        addItemQuery = 'INSERT INTO items (itemname, itemdescription, rest_name, itemprice) VALUES (?, ?, ?, ?)';
-        pool.query(addItemQuery, [itemname, itemdescription, rest_name, itemprice], (err, result) => {
+        addItemQuery = 'INSERT INTO items (itemname, itemdescription, rest_name, itemprice, section) VALUES (?, ?, ?, ?, ?)';
+        pool.query(addItemQuery, [itemname, itemdescription, rest_name, itemprice, section], (err, result) => {
             if(err){
                 console.log("Database error occurred");
                 res.status(400).json({responseMessage: 'Some Error occurred with database new'});
@@ -46,7 +85,7 @@ router.route('/updateMenu').post(function(req, res){
             }
         })
     } else if (itemstatus == 'DELETE'){
-        deleteItemQuery = 'DELETE FROM items WHERE (rest_name = ?) and (itemname = ?)';
+        deleteItemQuery = 'DELETE FROM items WHERE rest_name = ? and itemname = ?';
         pool.query(deleteItemQuery, [rest_name, itemname], (err, result1) => {
             if(err){
                 console.log("Database error occurred");
@@ -57,8 +96,8 @@ router.route('/updateMenu').post(function(req, res){
             }
         })
     } else {
-        updateItemQuery = 'UPDATE items SET itemname = ?, itemdescription = ?, itemprice = ? WHERE (rest_name = ?) and (itemname = ?)';
-        pool.query(updateItemQuery, [newitemname, itemdescription, itemprice, rest_name, itemname], (err, result2) => {
+        updateItemQuery = 'UPDATE items SET itemname = ?, itemdescription = ?, itemprice = ?, section = ? WHERE (rest_name = ?) and (itemname = ?)';
+        pool.query(updateItemQuery, [newitemname, itemdescription, itemprice, section, rest_name, itemname], (err, result2) => {
             if(err){
                 console.log("Database error occurred");
                 res.status(400).json({responseMessage: 'Some Error occurred with database update'});

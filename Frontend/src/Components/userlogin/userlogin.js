@@ -28,7 +28,7 @@ class UserLogin extends Component{
     onSubmit(e){
         e.preventDefault();
         if (this.state.username == "" || this.state.password == "") {
-            alert("Usernmae and Password cannot be empty");
+            alert("Username and Password cannot be empty");
         }
         else {
             const data = {

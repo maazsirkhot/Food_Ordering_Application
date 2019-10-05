@@ -3,12 +3,12 @@ var pool = require('../helpers/pool');
 var router = express.Router();
 var crypt = require('../helpers/passwordEncryption');
 
-router.route('/orders').post(function(req, res){
+router.route('/Orders').post(function(req, res){
     //console.log(req.body);
 
     //Get userdata from data attribute of object in request. 
     var cart = req.body.data;
-    console.log(cart);
+    //console.log(cart);
     var username, rest_name, itemname, quantity, itemprice, price, cartid, itemid;
 
     var d = new Date();
@@ -38,7 +38,7 @@ router.route('/orders').post(function(req, res){
                 itemdetails = [cartid, username, rest_name, itemname, quantity, itemprice, price];
                 //console.log(itemdetails);
                 (function insertDb (cartid, username, rest_name, itemname, quantity, itemprice, price) {
-                    getItemIDQuery = "SELECT itemid FROM items WHERE itemname=? and rest_name=?"
+                getItemIDQuery = "SELECT itemid FROM items WHERE itemname=? and rest_name=?"
                 pool.query(getItemIDQuery, [itemname, rest_name], (err, result) => {
                     if(err) {
                         console.log("Database error occurred one");
@@ -53,12 +53,12 @@ router.route('/orders').post(function(req, res){
                             pool.query(addtoCartQuery, addtoCart, (err, result1) => {
                                 if(err) {
                                     console.log("Database error occurred one");
-                                    res.status(400).json({responseMessage: 'Some Error occurred with database one'});                            
+                                    res.status(400).json({cartid : "", totalprice : ""});                            
                                 } else {
                                     totalitems++;
                                     console.log("Item added to cart in database");
                                     if(totalitems === cart.length){
-                                        res.status(400).json({responseMessage: 'Items added to cart'});
+                                        res.status(200).json({cartid : cartid, totalprice : totalprice});
                                     }                            
                                 } 
                             })
@@ -71,12 +71,6 @@ router.route('/orders').post(function(req, res){
                 })
                 })(cartid, username, rest_name, itemname, quantity, itemprice, price, orderstatus, totalprice);
             });
-
-    
-    
-
-    
-
 })
 
 router.route('/getOwnerOrders').get(function(req, res){

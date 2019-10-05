@@ -7,7 +7,7 @@ var crypt = require('../helpers/passwordEncryption');
 router.route('/OwnerProfile').post(function(req, res){
     console.log("OwnerProfile");
     var signupData = {
-        "name": req.body.fname + " " + req.body.lname,
+        "name": req.body.name,
         "email": req.body.email,
         "password": req.body.password,
         "mob": req.body.mob,
@@ -30,10 +30,10 @@ router.route('/OwnerProfile').post(function(req, res){
 router.route('/UserProfile').post(function(req, res){
     console.log("OwnerProfile");
     var signupData = {
-        "name": req.body.fname + " " + req.body.lname,
+        "name": req.body.name,
         "email": req.body.email,
         "password": req.body.password,
-        "mob": req.body.mob,
+        "mob": req.body.contact,
         "address": req.body.address
     }
     var updateOwner = "UPDATE users SET name = ?, username = ?, contact = ?, address = ?, password = ? WHERE (username = ?)";
@@ -46,6 +46,48 @@ router.route('/UserProfile').post(function(req, res){
             res.status(200).send("Profile Updated");
         }
     })
+})
+
+router.route('/GetUserProfile').post(function(req, res){
+    console.log("Inside get user profile");
+
+    var username = req.body.username;
+
+    var getProfileQuery = "select * from users where username = ?";
+    pool.query(getProfileQuery, [username], (err, result) => {
+        if(err){
+            console.log("Error with database");
+        } else {
+            if(result.length > 0){
+                res.status(200).send(result[0]);
+            } else {
+                console.log("User does not exist");
+                res.status(400).send("User does not exist");
+            }
+        }
+    })
+
+})
+
+router.route('/GetOwnerProfile').post(function(req, res){
+    console.log("Inside get user profile");
+
+    var username = req.body.email;
+
+    var getProfileQuery = "select * from owners where owneremail = ?";
+    pool.query(getProfileQuery, [username], (err, result) => {
+        if(err){
+            console.log("Error with database");
+        } else {
+            if(result.length > 0){
+                res.status(200).send(result[0]);
+            } else {
+                console.log("User does not exist");
+                res.status(400).send("User does not exist");
+            }
+        }
+    })
+
 })
 
 module.exports = router;

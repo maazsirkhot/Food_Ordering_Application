@@ -96,7 +96,7 @@ router.route('/loginUser').post((req, res) => {
 });
 
 router.route('/loginOwner').post((req, res) => {
-    var email = req.body.owneremail;
+    var email = req.body.username;
     var password = req.body.password;
 
     loginCheckQuery = "SELECT * FROM owners WHERE owneremail = ?";
@@ -109,8 +109,9 @@ router.route('/loginOwner').post((req, res) => {
             console.log(result);
             if(result.length > 0 && result[0].password == password){
                 res.cookie('cookie',"ownercookie",{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookieemail',email,{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookiename',result[0].name,{maxAge: 900000, httpOnly: false, path : '/'});
+                res.cookie('cookieemail',result[0].owneremail,{maxAge: 900000, httpOnly: false, path : '/'});
+                res.cookie('cookiename',result[0].ownername,{maxAge: 900000, httpOnly: false, path : '/'});
+                res.cookie('cookierestname',result[0].rest_name,{maxAge: 900000, httpOnly: false, path : '/'});
                 req.session.user = result[0].username;
                 console.log("Owner Login successful");
                 res.status(200).json({responseMessage: 'Login Successful'});

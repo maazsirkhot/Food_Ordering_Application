@@ -1,0 +1,209 @@
+import React, {Component} from 'react';
+import cookie from 'react-cookies';
+import {Redirect} from 'react-router';
+import {Link} from 'react-router-dom';
+import NavBarLogin from "../navbarlogin";
+import "./userdashboard.css";
+import axios from 'axios'
+
+class ViewRestaurant extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            restname : localStorage.getItem("restname"),
+            menu : [],
+            menuCheck : "",
+            postStatus : "",
+            totalprice : 0,
+            orderplaced : ""
+        }
+        this.changeHandler = this.changeHandler.bind(this);
+        this.onsubmit = this.onsubmit.bind(this);
+        this.placeorder = this.placeorder.bind(this);
+    }
+
+    componentWillMount(){
+        //console.log(this.props.location.state.restname);
+        let username = cookie.load('cookieemail');
+        this.setState({
+            user : username
+        })
+        console.log(this.state.restname);
+        const data = {
+            restname : this.state.restname
+        }
+        console.log(data);
+        axios.post('http://localhost:3001/GetMenu', data)
+        .then(response => {
+            console.log("Response Status: " + response.status);
+            if(response.status === 200){
+                this.setState({
+                    menu : response.data,
+                    menuCheck : true
+                })
+                //console.log(this.state.menu);
+            } else {
+                this.setState({
+                    menuCheck : false
+                })
+                console.log("No Items found");
+            }
+        })
+        
+    }
+
+    changeHandler = (e) => {
+        this.setState({
+                [e.target.name] : [e.target.name, e.target.value, e.target.id]
+        })
+        //console.log(this.state);
+    }
+
+    onsubmit(e){
+        e.preventDefault();
+
+        console.log("Inside Cart Submit");
+        //console.log(this.state);
+        var carts = [];
+        var element;
+        for (element in this.state){
+            if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced"){
+                continue;
+            } else {
+                var cartitem = {
+                    username : this.state.user,
+                    rest_name : this.state.restname,
+                    itemname : element,
+                    quantity : this.state[element][1],
+                    itemprice : this.state[element][2]
+                }
+                carts.push(cartitem);
+            }
+        }
+
+        carts = carts.filter(itm => {
+            return itm.quantity != ""
+        })
+
+        console.log(carts);
+        //console.log(carts);
+        
+        if(carts.length == 0){
+            this.setState({
+                totalprice : 0
+            })
+            alert("Please select an item");
+        } else {
+            const data = {
+                data : carts
+            }
+            console.log(data);
+            axios.post("http://localhost:3001/Orders", data)
+            .then(response => {
+                console.log("Response Status: " + response.status);
+                if(response.status === 200){
+                    console.log("Cart ID: " + response.data.cartid);
+                    localStorage.setItem('cartid', response.data.cartid);
+                    this.setState({
+                        postStatus : true,
+                        totalprice : response.data.totalprice
+                    })
+                    //console.log(this.state.totalprice);
+                    
+                } else {
+                    this.setState({
+                        postStatus : false
+                    })
+                    console.log("No Items found");
+                }
+            })
+        }
+        
+
+
+    }
+
+    placeorder(e){
+        if(this.state.totalprice == 0){
+           alert("Please select an item");
+        }
+        else {
+            this.setState({
+                orderplaced : "true"
+            })
+            console.log(this.state.orderplaced);
+            alert("Order Placed Successfully");
+        }
+    }
+
+    render(){
+
+
+        var itemDetails = (items) => {
+            var rows = items.map(itm => {
+                return (
+                    <tr key={itm.itemname}>
+                    <td>{itm.itemname}</td>
+                    <td>{itm.itemdescription}</td>
+                    <td>{itm.itemprice}</td>
+                    <td><input type="number" className="form-control" name={itm.itemname} onChange = {this.changeHandler} placeholder="Quantity" id={itm.itemprice} min="0"/></td>
+                    </tr>
+                )
+            })
+            return rows;
+        }
+        var menuDetails = this.state.menu.map(result => {
+            return(
+                <tbody key={result.section}>
+                <tr><th>{result.section}</th></tr>
+                {itemDetails(result.items)}
+                
+                </tbody>
+            );
+        });
+
+        let redirectVar = null;
+        if (this.state.orderplaced == "true" && localStorage.getItem("cartid")) {
+            redirectVar = <Redirect to="/UserDashboard" />;
+        }
+
+
+        return (
+            <div>
+            
+                <NavBarLogin />
+                {redirectVar}
+                <div class="vertical-nav bg-danger" id="sidebar">
+                <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Dashboard</p>
+                <ul class="nav flex-column bg-white mb-0">
+                <li class="nav-item">
+                    <a href="/UserProfile" class="nav-link text-dark font-italic bg-light">
+                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Profile
+                    </a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light">
+                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Past Orders
+                    </a></li> 
+                </ul>
+                </div>
+                <div class="page-content p-5" id="content">
+                <h3>{this.state.restname}</h3>
+                
+                <table class="table table-hover">
+                    <thead>
+                    </thead>
+                    {menuDetails}        
+                </table>
+                
+                <button type = "submit"  onClick = {this.onsubmit} class="btn btn-danger">Calculate Total</button>
+                <h3>Order Total : {this.state.totalprice}</h3>
+                <button type = "submit"  onClick = {this.placeorder} class="btn btn-danger">Place Order</button>  
+                </div>
+
+
+            </div>
+        )
+    }
+}
+
+export default ViewRestaurant;
