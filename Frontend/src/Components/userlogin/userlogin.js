@@ -5,6 +5,7 @@ import NavBar from "../navbar";
 import './userlogin.css';
 import { connect } from 'react-redux'; 
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 
 class UserLogin extends Component{
@@ -38,7 +39,7 @@ class UserLogin extends Component{
             }
             axios.defaults.withCredentials = true;
 
-            axios.post('http://localhost:3001/loginUser', data)
+            axios.post(rooturl + '/loginUser', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

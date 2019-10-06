@@ -63,5 +63,5 @@ app.use(basePath, cartorder);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads/')));
 
 
-app.listen(3001);
-console.log("Server Listening on port 3001");
+app.listen(port);
+console.log("Server Listening on port " + port);

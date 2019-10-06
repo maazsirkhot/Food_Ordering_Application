@@ -4,7 +4,8 @@ import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
-import axios from 'axios'
+import axios from 'axios';
+import {rooturl} from '../../config';
 
 class UserDashboard extends Component{
     constructor(props){
@@ -36,7 +37,7 @@ class UserDashboard extends Component{
                 itemname : this.state.itemname
             }
             console.log(data);
-            axios.post('http://localhost:3001/UserDashboard', data)
+            axios.post(rooturl + '/UserDashboard', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

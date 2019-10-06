@@ -45,19 +45,15 @@ class NavBarLogin extends Component{
         
         return (
             <div>
-                {/* {redirectVar} */}
+                {redirectVar}
                 <nav class="navbar navbar-expand-sm bg-danger navbar-dark fixed-top">
                 <div class="container-fluid">
                 <Link to={dashboard}><button type="button" class="btn btn-danger">Home</button></Link>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="nav navbar-nav ml-auto">
                     <li class="nav-item dropdown">
-                    <a class="btn btn-danger dropdown-toggle" data-toggle="dropdown" href="#">{this.state.user}
-                    </a>
-                    <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Orders</a>
-                    <a class="dropdown-item" href="#">Profile</a>
-                    </div>
+                    <a class="btn btn-danger" data-toggle="dropdown" href="#">Welcome, {this.state.user}</a>
+                    
                     </li>
                     <li class="nav-item"><Link to="/" onClick = {this.handleLogout}><button class="btn btn-danger">Logout</button></Link></li>
                 </ul>
@@ -68,7 +64,7 @@ class NavBarLogin extends Component{
 	            <div class="container">
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><button type="button" class="btn btn-danger">Contact</button></li>
+                <li class="nav-item"><button type="button" class="btn btn-danger" disabled>Thank you</button></li>
                 </ul>
                 </div>
 	            </div>

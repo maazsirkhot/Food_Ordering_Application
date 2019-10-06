@@ -4,6 +4,7 @@ import {Redirect} from 'react-router';
 import NavBar from "../navbar";
 import './usersignup.css'; 
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 
 class UserSignUp extends Component{
@@ -41,7 +42,7 @@ class UserSignUp extends Component{
             }
             axios.defaults.withCredentials = true;
 
-            axios.post('http://localhost:3001/SignUpUser', data)
+            axios.post(rooturl + '/SignUpUser', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

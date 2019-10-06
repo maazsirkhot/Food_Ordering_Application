@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "../dashboard/userdashboard.css";
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 class UserOrders extends Component{
     constructor(props){
@@ -23,7 +24,7 @@ class UserOrders extends Component{
             username : this.state.username
         }
         console.log(data);
-        axios.post('http://localhost:3001/getUserOrders', data)
+        axios.post(rooturl + '/getUserOrders', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){

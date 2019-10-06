@@ -4,7 +4,8 @@ import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
-import axios from 'axios'
+import axios from 'axios';
+import {rooturl} from '../../config';
 
 class ViewRestaurant extends Component {
     constructor(props){
@@ -33,7 +34,7 @@ class ViewRestaurant extends Component {
             restname : this.state.restname
         }
         console.log(data);
-        axios.post('http://localhost:3001/GetMenu', data)
+        axios.post(rooturl + '/GetMenu', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){
@@ -100,7 +101,7 @@ class ViewRestaurant extends Component {
                 data : carts
             }
             console.log(data);
-            axios.post("http://localhost:3001/Orders", data)
+            axios.post(rooturl + "/Orders", data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

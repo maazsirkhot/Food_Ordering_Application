@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "./userdashboard.css";
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 class OwnerDashboard extends Component{
     constructor(props){
@@ -32,7 +33,7 @@ class OwnerDashboard extends Component{
             restname : this.state.restname
         }
         console.log(data);
-        axios.post('http://localhost:3001/getOwnerOrders', data)
+        axios.post(rooturl + '/getOwnerOrders', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){
@@ -71,7 +72,7 @@ class OwnerDashboard extends Component{
                         orderstatus : this.state[element]
                     }
                     console.log(data);
-                    axios.post("http://localhost:3001/updateStatus", data)
+                    axios.post(rooturl + "/updateStatus", data)
                     .then(response => {
                         console.log("Response Status: " + response.status);
                         if(response.status === 200){

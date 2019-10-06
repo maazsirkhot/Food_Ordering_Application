@@ -4,6 +4,7 @@ import {Link, Redirect} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "./ownerprofile.css";
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 class OwnerProfile extends Component{
     constructor(props){
@@ -36,7 +37,7 @@ class OwnerProfile extends Component{
             const data = {
                 email : username
             }
-            axios.post('http://localhost:3001/GetOwnerProfile', data)
+            axios.post(rooturl + '/GetOwnerProfile', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
@@ -69,7 +70,7 @@ class OwnerProfile extends Component{
                 email : this.state.email
             }
 
-            axios.post('http://localhost:3001/OwnerProfile', data)
+            axios.post(rooturl + '/OwnerProfile', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

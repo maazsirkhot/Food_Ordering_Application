@@ -4,6 +4,7 @@ import {Link, Redirect} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import './userprofile.css';
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 
 class UserProfile extends Component{
@@ -35,7 +36,7 @@ class UserProfile extends Component{
             const data = {
                 username : username
             }
-            axios.post('http://localhost:3001/GetUserProfile', data)
+            axios.post(rooturl + '/GetUserProfile', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
@@ -64,7 +65,7 @@ class UserProfile extends Component{
                 email : this.state.username
             }
 
-            axios.post('http://localhost:3001/UserProfile', data)
+            axios.post(rooturl + '/UserProfile', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){

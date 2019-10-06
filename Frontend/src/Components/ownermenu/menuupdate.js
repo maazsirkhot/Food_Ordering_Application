@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "../dashboard/userdashboard.css";
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 class MenuUpdate extends Component{
     constructor(props){
@@ -47,7 +48,7 @@ class MenuUpdate extends Component{
             itemstatus : "NEW"
             
         }
-        axios.post('http://localhost:3001/updateMenu', data)
+        axios.post(rooturl + '/updateMenu', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){
@@ -72,7 +73,7 @@ class MenuUpdate extends Component{
             itemstatus : "DELETE"
         }
         console.log(this.state.restname)
-        axios.post('http://localhost:3001/updateMenu', data)
+        axios.post(rooturl + '/updateMenu', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){

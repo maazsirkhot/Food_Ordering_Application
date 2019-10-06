@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import NavBarLogin from "../navbarlogin";
 import "../dashboard/userdashboard.css";
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 class ViewMenu extends Component{
     constructor(props){
@@ -27,7 +28,7 @@ class ViewMenu extends Component{
             restname : this.state.restname
         }
         console.log(data);
-        axios.post('http://localhost:3001/GetMenu', data)
+        axios.post(rooturl + '/GetMenu', data)
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){

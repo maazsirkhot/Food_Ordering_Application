@@ -5,6 +5,7 @@ import NavBar from "../navbar";
 import './ownerlogin.css';
 import { connect } from 'react-redux'; 
 import axios from 'axios';
+import {rooturl} from '../../config';
 
 
 class OwnerLogin extends Component{
@@ -37,7 +38,7 @@ class OwnerLogin extends Component{
             }
             axios.defaults.withCredentials = true;
 
-            axios.post('http://localhost:3001/loginOwner', data)
+            axios.post(rooturl + '/loginOwner', data)
             .then(response => {
                 console.log("Response Status: " + response.status);
                 if(response.status === 200){
