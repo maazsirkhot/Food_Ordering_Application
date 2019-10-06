@@ -15,7 +15,8 @@ class OwnerDashboard extends Component{
             newOrders : "",
             otherOrders : "",
             orderCheck : "",
-            orderStatus : ""
+            orderStatus : "",
+            updateStatus : ""
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.updateStatus = this.updateStatus.bind(this);
@@ -63,10 +64,10 @@ class OwnerDashboard extends Component{
         e.preventDefault();
         var element;
         for (element in this.state){
-            if(element == "restname" || element == "newOrders" || element == "otherOrders" || element == "orderCheck" || element == "orderStatus"){
+            if(element == "restname" || element == "newOrders" || element == "otherOrders" || element == "orderCheck" || element == "orderStatus" || element == "updateStatus"){
                 continue;
             } else {
-                if(this.state[element] == "PREPARING" || this.state[element] == "READY" || this.state[element] == "DELIVERED"){
+                if(this.state[element] == "PREPARING" || this.state[element] == "READY" || this.state[element] == "DELIVERED" || this.state[element] == "CANCELLED"){
                     const data = {
                         cartid : element,
                         orderstatus : this.state[element]
@@ -86,9 +87,10 @@ class OwnerDashboard extends Component{
                             })
                             console.log("No Items found");
                         }
+                        window.location.reload(false);
                     })
                 } else {
-                    alert("Only valid status are PREPARING, READY, DELIVERED");
+                    alert("Only valid status are PREPARING, READY, DELIVERED, CANCELLED");
                 }
             }
         }

@@ -27,11 +27,9 @@ router.route('/UserDashboard').post(function(req, res){
 
 })
 
-router.route('/OwnerDashboard').get(function(req, res){
-    console.log("Inside Owner Dashboard");
-    
 
-})
+
+
 
 
 module.exports = router;

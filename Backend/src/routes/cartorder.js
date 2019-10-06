@@ -98,7 +98,7 @@ router.route('/getOwnerOrders').post(function(req, res){
         else {
             if(result.length > 0){
                 for(item of result){
-                    if(item.ORDERSTATUS != 'DELIVERED'){
+                    if(item.ORDERSTATUS != 'DELIVERED' && item.ORDERSTATUS != 'CANCELLED'){
                         order = arraySearch(item.CARTID, newOrders);
                         if(order != -1){
                             var itm = {
@@ -193,7 +193,7 @@ router.route('/getUserOrders').post(function(req, res){
         } else {
             if(result.length > 0){
                 for(item of result){
-                    if(item.ORDERSTATUS == 'NEW'){
+                    if(item.ORDERSTATUS != 'DELIVERED' && item.ORDERSTATUS != 'CANCELLED'){
                         order = arraySearch(item.CARTID, newOrders);
                         if(order != -1){
                             var itm = {

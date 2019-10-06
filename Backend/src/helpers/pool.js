@@ -11,4 +11,14 @@ var pool = mysql.createPool({
 });
 var sql = "SELECT * FROM USERS";
 
+
+// var pool = mysql.createConnection({
+//     host: "grubhubdb.ciea7s8xmtar.us-west-1.rds.amazonaws.com",
+//     user: "root",
+//     password: "password",
+//     database: 'grubhub'
+//   });
+
+
+
 module.exports = pool;

@@ -15,6 +15,12 @@ var pool = require('./src/helpers/pool.js');
 var sql = "SELECT * FROM USERS";
 var encrypt = require('./src/helpers/passwordEncryption.js');
 
+//var con = require('./src/helpers/pool.js');
+//   con.connect(function(err) {
+//     if (err) throw err;
+//     console.log("DB Connected!");
+//   });
+
 app.use(session({
     secret              : 'cmpe273_homeaway_mysql',
     resave              : false, // Forces the session to be saved back to the session store, even if the session was never modified during the request
@@ -41,6 +47,9 @@ pool.query(sql, function(err, output){
     }
         
 })
+
+
+
 
 //Routes
 var loginsignup = require('./src/routes/loginsignup');
