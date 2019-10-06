@@ -7,7 +7,7 @@ router.route('/GetMenu').post(function(req, res){
     console.log("Inside Menu");
     var rest_name = req.body.restname;
     console.log(rest_name);
-    getMenuQuery = 'SELECT * from items WHERE rest_name = ?';
+    getMenuQuery = 'SELECT * FROM ITEMS WHERE REST_NAME = ?';
     allSections = [];
     eachSection = {
         section : "",
@@ -32,22 +32,22 @@ router.route('/GetMenu').post(function(req, res){
 
                 for(item of result){
 
-                    sectNo = arraySearch(item.section, allSections);
+                    sectNo = arraySearch(item.SECTION, allSections);
                     if(sectNo != -1){
                         var items = {
-                            itemname : item.itemname,
-                            itemdescription : item.itemdescription,
-                            itemprice : item.itemprice
+                            itemname : item.ITEMNAME,
+                            itemdescription : item.ITEMDESCRIPTION,
+                            itemprice : item.ITEMPRICE
                         }
                         allSections[sectNo].items.push(items);
                     }
                     else{
                         allSections.push({
-                            section : item.section,
+                            section : item.SECTION,
                             items : [items = {
-                                itemname : item.itemname,
-                                itemdescription : item.itemdescription,
-                                itemprice : item.itemprice
+                                itemname : item.ITEMNAME,
+                                itemdescription : item.ITEMDESCRIPTION,
+                                itemprice : item.ITEMPRICE
                             }]
                         })
                     }
@@ -74,7 +74,7 @@ router.route('/updateMenu').post(function(req, res){
         var section = req.body.section;
 
     if(itemstatus == 'NEW'){
-        addItemQuery = 'INSERT INTO items (itemname, itemdescription, rest_name, itemprice, section) VALUES (?, ?, ?, ?, ?)';
+        addItemQuery = 'INSERT INTO ITEMS (ITEMNAME, ITEMDESCRIPTION, REST_NAME, ITEMPRICE, SECTION) VALUES (?, ?, ?, ?, ?)';
         pool.query(addItemQuery, [itemname, itemdescription, rest_name, itemprice, section], (err, result) => {
             if(err){
                 console.log("Database error occurred");
@@ -85,7 +85,7 @@ router.route('/updateMenu').post(function(req, res){
             }
         })
     } else if (itemstatus == 'DELETE'){
-        deleteItemQuery = 'DELETE FROM items WHERE rest_name = ? and itemname = ?';
+        deleteItemQuery = 'DELETE FROM ITEMS WHERE REST_NAME = ? AND ITEMNAME = ?';
         pool.query(deleteItemQuery, [rest_name, itemname], (err, result1) => {
             if(err){
                 console.log("Database error occurred");
@@ -96,7 +96,7 @@ router.route('/updateMenu').post(function(req, res){
             }
         })
     } else {
-        updateItemQuery = 'UPDATE items SET itemname = ?, itemdescription = ?, itemprice = ?, section = ? WHERE (rest_name = ?) and (itemname = ?)';
+        updateItemQuery = 'UPDATE ITEMS SET ITEMNAME = ?, ITEMDESCRIPTION = ?, ITEMPRICE = ?, SECTION = ? WHERE (REST_NAME = ?) AND (ITEMNAME = ?)';
         pool.query(updateItemQuery, [newitemname, itemdescription, itemprice, section, rest_name, itemname], (err, result2) => {
             if(err){
                 console.log("Database error occurred");

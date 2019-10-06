@@ -80,8 +80,8 @@ class OwnerLogin extends Component{
                     
                     
                     <div class="form-label-group">
-                    <input type="email" name = "username" id="owneremail" onChange = {this.changeHandler} class="form-control" placeholder="Email address" required/>
-                    <label for="owneremail">Email address</label>
+                    <input type="email" name = "username" id="email" onChange = {this.changeHandler} class="form-control" placeholder="Email address" required/>
+                    <label for="email">Email address</label>
                     </div>
                     <hr/>
                     <div class="form-label-group">

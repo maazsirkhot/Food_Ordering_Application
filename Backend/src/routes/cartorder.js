@@ -38,7 +38,7 @@ router.route('/Orders').post(function(req, res){
                 itemdetails = [cartid, username, rest_name, itemname, quantity, itemprice, price];
                 //console.log(itemdetails);
                 (function insertDb (cartid, username, rest_name, itemname, quantity, itemprice, price) {
-                getItemIDQuery = "SELECT itemid FROM items WHERE itemname=? and rest_name=?"
+                getItemIDQuery = "SELECT ITEMID FROM ITEMS WHERE ITEMNAME=? AND REST_NAME=?"
                 pool.query(getItemIDQuery, [itemname, rest_name], (err, result) => {
                     if(err) {
                         console.log("Database error occurred one");
@@ -46,10 +46,10 @@ router.route('/Orders').post(function(req, res){
                     } else {
                         if(result.length > 0){
                             //console.log(result[0].itemid);
-                            itemid = result[0].itemid;
+                            itemid = result[0].ITEMID;
                             addtoCart = [cartid, username, rest_name, itemid, quantity, itemprice, price, orderstatus, totalprice];
                             console.log(addtoCart);
-                            addtoCartQuery = "INSERT INTO cart (cartid, username, rest_name, itemid, quantity, itemprice, price, orderstatus, totalprice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            addtoCartQuery = "INSERT INTO CART (CARTID, USERNAME, REST_NAME, ITEMID, QUANTITY, ITEMPRICE, PRICE, ORDERSTATUS, TOTALPRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             pool.query(addtoCartQuery, addtoCart, (err, result1) => {
                                 if(err) {
                                     console.log("Database error occurred one");
@@ -73,10 +73,8 @@ router.route('/Orders').post(function(req, res){
             });
 })
 
-router.route('/getOwnerOrders').get(function(req, res){
+router.route('/getOwnerOrders').post(function(req, res){
     console.log("Inside getOwnerOrders");
-
-    var owneremail = req.body.owneremail;
     var rest_name = req.body.restname;
 
     arraySearch = (id, arr) => {
@@ -87,18 +85,12 @@ router.route('/getOwnerOrders').get(function(req, res){
         return -1;
     }
 
-    getOrderQuery = 'select c.cartid, c.username, c.rest_name, i.itemname, c.quantity, c.itemprice, c.price, c.orderstatus, c.totalprice from cart c join items i on i.itemid = c.itemid where c.rest_name = ? order by cartid';
-    allOrders = [];
-    eachOrder = {
-        cartid : "",
-        username : "",
-        rest_name : "",
-        orderstatus : "",
-        totalprice : "",
-        items : []
-    }
+    getOrderQuery = 'SELECT C.CARTID, C.USERNAME, U.ADDRESS, I.ITEMNAME, C.QUANTITY, C.ITEMPRICE, C.PRICE, C.ORDERSTATUS, C.TOTALPRICE FROM CART C JOIN ITEMS I ON I.ITEMID = C.ITEMID JOIN USERS U ON U.USERNAME = C.USERNAME WHERE C.REST_NAME = ?';
+    newOrders = [];
+    otherOrders = [];
+
     pool.query(getOrderQuery, [rest_name], (err, result) => {
-        //console.log(result);
+        console.log(result);
         if(err) {
             console.log("Database error occurred one");
             res.status(400).json({responseMessage: 'Some Error occurred with database one'});                            
@@ -106,42 +98,160 @@ router.route('/getOwnerOrders').get(function(req, res){
         else {
             if(result.length > 0){
                 for(item of result){
-                    //console.log(item);
-                    order = arraySearch(item.cartid, allOrders);
-                    //console.log(order);
-                    if(order != -1){
-                        var itm = {
-                            itemname : item.itemname,
-                            quantity : item.quantity,
-                            itemprice : item.itemprice,
-                            price : item.price
+                    if(item.ORDERSTATUS != 'DELIVERED'){
+                        order = arraySearch(item.CARTID, newOrders);
+                        if(order != -1){
+                            var itm = {
+                                itemname : item.ITEMNAME,
+                                quantity : item.QUANTITY,
+                                itemprice : item.ITEMPRICE,
+                                price : item.PRICE
+                            }
+                            newOrders[order].items.push(itm);
+                        } else {
+                            newOrders.push({
+                                cartid : item.CARTID,
+                                username : item.USERNAME,
+                                address : item.ADDRESS,
+                                orderstatus : item.ORDERSTATUS,
+                                totalprice : item.TOTALPRICE,
+                                items : [itm = {
+                                    itemname : item.ITEMNAME,
+                                    quantity : item.QUANTITY,
+                                    itemprice : item.ITEMPRICE,
+                                    price : item.PRICE
+                                }]
+                            })
                         }
-                        //console.log(allOrders[order].items);
-                        allOrders[order].items.push(itm);
-                        
+                    } else {
+                        order = arraySearch(item.CARTID, otherOrders);
+                        if(order != -1){
+                            var itm = {
+                                itemname : item.ITEMNAME,
+                                quantity : item.QUANTITY,
+                                itemprice : item.ITEMPRICE,
+                                price : item.PRICE
+                            }
+                            otherOrders[order].items.push(itm);
+                        } else {
+                            otherOrders.push({
+                                cartid : item.CARTID,
+                                username : item.USERNAME,
+                                address : item.ADDRESS,
+                                orderstatus : item.ORDERSTATUS,
+                                totalprice : item.TOTALPRICE,
+                                items : [itm = {
+                                    itemname : item.ITEMNAME,
+                                    quantity : item.QUANTITY,
+                                    itemprice : item.ITEMPRICE,
+                                    price : item.PRICE
+                                }]
+                            })
+                        }
                     }
-                    else{
-                        allOrders.push({
-                            cartid : item.cartid,
-                            username : item.username,
-                            rest_name : item.rest_name,
-                            orderstatus : item.orderstatus,
-                            totalprice : item.totalprice,
-                            items : [itm = {
-                                itemname : item.itemname,
-                                quantity : item.quantity,
-                                itemprice : item.itemprice,
-                                price : item.price
-                            }]
-                        })
-                    }
-                    
                 }
-                console.log(allOrders[0].items, allOrders[1].items);
-                res.status(200).json({responseMessage: 'All results fetched'});   
+                console.log(newOrders, otherOrders);
+                allOrders = {
+                    newOrders : newOrders,
+                    otherOrders : otherOrders
+                }
+                res.status(200).json(allOrders);  
             
         }
     }      
+    })
+})
+
+router.route('/getUserOrders').post(function(req, res){
+    console.log("Inside getUserOrders");
+
+    var username = req.body.username;
+    console.log(username);
+    arraySearch = (id, arr) => {
+        for(i = 0; i < arr.length; i++){
+            if(arr[i].cartid == id)
+                return i;
+        }
+        return -1;
+    }
+
+    var getOrderQuery = "SELECT C.CARTID, C.REST_NAME, I.ITEMNAME, C.QUANTITY, C.ITEMPRICE, C.PRICE, C.ORDERSTATUS, C.TOTALPRICE FROM CART C JOIN ITEMS I ON I.ITEMID = C.ITEMID WHERE C.USERNAME = ?";
+    newOrders = [];
+    otherOrders = [];
+    eachOrder = {
+        cartid : "",
+        rest_name : "",
+        orderstatus : "",
+        totalprice : "",
+        items : []
+    }
+    pool.query(getOrderQuery, [username], (err, result) => {
+        console.log(result);
+        if(err) {
+            console.log("Database error occurred one");
+            res.status(400).json({responseMessage: 'Some Error occurred with database one'});                            
+        } else {
+            if(result.length > 0){
+                for(item of result){
+                    if(item.ORDERSTATUS == 'NEW'){
+                        order = arraySearch(item.CARTID, newOrders);
+                        if(order != -1){
+                            var itm = {
+                                itemname : item.ITEMNAME,
+                                quantity : item.QUANTITY,
+                                itemprice : item.ITEMPRICE,
+                                price : item.PRICE
+                            }
+                            newOrders[order].items.push(itm);
+                        } else {
+                            newOrders.push({
+                                cartid : item.CARTID,
+                                rest_name : item.REST_NAME,
+                                orderstatus : item.ORDERSTATUS,
+                                totalprice : item.TOTALPRICE,
+                                items : [itm = {
+                                    itemname : item.ITEMNAME,
+                                    quantity : item.QUANTITY,
+                                    itemprice : item.ITEMPRICE,
+                                    price : item.PRICE
+                                }]
+                            })
+                        }
+                    } else {
+                        order = arraySearch(item.CARTID, otherOrders);
+                        if(order != -1){
+                            var itm = {
+                                itemname : item.ITEMNAME,
+                                quantity : item.QUANTITY,
+                                itemprice : item.ITEMPRICE,
+                                price : item.PRICE
+                            }
+                            otherOrders[order].items.push(itm);
+                        } else {
+                            otherOrders.push({
+                                cartid : item.CARTID,
+                                rest_name : item.REST_NAME,
+                                orderstatus : item.ORDERSTATUS,
+                                totalprice : item.TOTALPRICE,
+                                items : [itm = {
+                                    itemname : item.ITEMNAME,
+                                    quantity : item.QUANTITY,
+                                    itemprice : item.ITEMPRICE,
+                                    price : item.PRICE
+                                }]
+                            })
+                        }
+                    }
+                }
+                //console.log(newOrders, otherOrders);
+                allOrders = {
+                    newOrders : newOrders,
+                    otherOrders : otherOrders
+                }
+                res.status(200).json(allOrders);
+            }
+        }
+
     })
 })
 
@@ -153,7 +263,7 @@ router.route('/updateStatus').post(function(req, res){
     var cartid = req.body.cartid;
     var orderstatus = req.body.orderstatus;
 
-    var updateStatusQuery = 'UPDATE cart SET orderstatus = ? WHERE (cartid = ?)';
+    var updateStatusQuery = 'UPDATE CART SET ORDERSTATUS = ? WHERE (CARTID = ?)';
     pool.query(updateStatusQuery, [orderstatus, cartid], (err, result) => {
         if(err) {
             console.log("Database error occurred");

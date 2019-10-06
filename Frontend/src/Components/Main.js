@@ -11,7 +11,9 @@ import UserDashboard from './dashboard/userdashboard';
 import OwnerDashboard from './dashboard/ownerdashboard'
 import ViewRestaurant from './dashboard/viewrestaurant';
 import MenuUpdate from './ownermenu/menuupdate';
-import UserCart from './cart/usercart';
+import ViewMenu from './ownermenu/viewmenu';
+import UserOrders from './orders/userorders';
+import OwnerOrders from './orders/ownerorders';
 import cookie from 'react-cookies';
 
 class Main extends Component {
@@ -30,8 +32,10 @@ class Main extends Component {
                 <Route path="/UserDashboard" component={UserDashboard}/>
                 <Route path="/OwnerDashboard" component={OwnerDashboard}/>
                 <Route path="/ViewRestaurant" component={ViewRestaurant}/>
+                <Route path="/ViewMenu" component={ViewMenu}/>
                 <Route path="/MenuUpdate" component={MenuUpdate}/>
-                <Route path="/UserCart" component={UserCart}/>
+                <Route path="/UserOrders" component={UserOrders}/>
+                <Route path="/OwnerOrders" component={OwnerOrders}/>
                 
             </div>
         )

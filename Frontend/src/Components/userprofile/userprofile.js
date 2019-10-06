@@ -13,8 +13,6 @@ class UserProfile extends Component{
             name : "",
             contact : "",
             address : "",
-            password : "",
-            confirmpassword : "",
             username : "",
             updateStatus : ""
         }
@@ -43,11 +41,9 @@ class UserProfile extends Component{
                 if(response.status === 200){
                     //console.log(response.data)
                     this.setState({
-                        name : response.data.name,
-                        address : response.data.address,
-                        contact : response.data.contact,
-                        password : response.data.password,
-                        confirmpassword : response.data.password
+                        name : response.data.NAME,
+                        address : response.data.ADDRESS,
+                        contact : response.data.CONTACT,
                     })
                     //console.log(this.state);
 
@@ -59,17 +55,12 @@ class UserProfile extends Component{
     }
     onSubmit(e){
         e.preventDefault();
-
-        if(this.state.password != this.state.confirmpassword){
-            alert("Passwords do no match! Please try again");
-        } else {
             console.log("Updating Profile");
 
             const data = {
                 name : this.state.name,
                 contact : this.state.contact,
                 address : this.state.address,
-                password : this.state.password,
                 email : this.state.username
             }
 
@@ -88,7 +79,6 @@ class UserProfile extends Component{
                 }
             })
 
-        }
     }
 
     render() {
@@ -128,18 +118,6 @@ class UserProfile extends Component{
                     <label class="control-label col-sm-2" for="address">Address:</label>
                     <div class="col-sm-10">
                         <input type="text" onChange = {this.changeHandler} value={this.state.address} class="form-control" id="address" placeholder="Address" name="address" required/>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                    <label class="control-label col-sm-2" for="password">Password:</label>
-                    <div class="col-sm-10">
-                        <input type="password" onChange = {this.changeHandler} value={this.state.password} class="form-control" id="password" placeholder="Password" name="password" required/>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                    <label class="control-label col-sm-2" for="confirmpassword">Confirm Password:</label>
-                    <div class="col-sm-10">
-                        <input type="password" onChange = {this.changeHandler} value={this.state.confirmpassword} class="form-control" id="confirmpassword" placeholder="Confirm Password" name="confirmpassword" required/>
                     </div>
                     </div>
                     

@@ -32,7 +32,6 @@ class NavBar extends Component{
             <div>
                 <nav class="navbar navbar-expand-sm bg-danger navbar-dark fixed-top">
 	            <div class="container">
-                <button type="button" class="btn btn-danger">Home</button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><Link to="/UserLogin"><button type="button" class="btn btn-danger" id = "userLogin">Login</button></Link></li>

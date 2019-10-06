@@ -12,8 +12,6 @@ class OwnerProfile extends Component{
             name : "",
             mob : "",
             email : "",
-            password : "",
-            confirmpassword : "",
             restname : "",
             restzip : "",
             cuisine : "",
@@ -34,6 +32,7 @@ class OwnerProfile extends Component{
             this.setState({
                 email : username
             })
+            console.log("Checking Email : " + this.state.email);
             const data = {
                 email : username
             }
@@ -43,13 +42,11 @@ class OwnerProfile extends Component{
                 if(response.status === 200){
                     //console.log(response.data)
                     this.setState({
-                        name : response.data.ownername,
-                        mob : response.data.ownermob,
-                        password : response.data.password,
-                        confirmpassword : response.data.password,
-                        restname : response.data.rest_name,
-                        restzip : response.data.rest_zip,
-                        cuisine : response.data.cuisine
+                        name : response.data.OWNERNAME,
+                        mob : response.data.OWNERMOB,
+                        restname : response.data.REST_NAME,
+                        restzip : response.data.REST_ZIP,
+                        cuisine : response.data.CUISINE
                     })
                     console.log(this.state);
 
@@ -62,19 +59,13 @@ class OwnerProfile extends Component{
 
     onSubmit(e){
         e.preventDefault();
-        if(this.state.password != this.state.confirmpassword){
-            alert("Passwords do no match! Please try again");
-        } else {
             console.log("Updating Profile");
 
             const data = {
                 name : this.state.name,
                 mob : this.state.mob,
-                restname : this.state.restname,
                 restzip : this.state.restzip,
                 cuisine : this.state.cuisine,
-                password : this.state.password,
-                confirmpassword : this.state.confirmpassword,
                 email : this.state.email
             }
 
@@ -93,7 +84,6 @@ class OwnerProfile extends Component{
                 }
             })
 
-        }
     }
 
 
@@ -110,7 +100,7 @@ class OwnerProfile extends Component{
                     <div class="form-group">
                     <label class="control-label col-sm-2" for="Email">Email:</label>
                     <div class="col-sm-10">
-                        <input type="text" onChange = {this.changeHandler} value={this.state.email} class="form-control" id="email" placeholder="Email" name="email"/>
+                        <input type="text" onChange = {this.changeHandler} value={this.state.email} class="form-control" id="email" placeholder="Email" name="email" disabled/>
                     </div>
                     </div>
 
@@ -130,7 +120,7 @@ class OwnerProfile extends Component{
                     <div class="form-group">
                     <label class="control-label col-sm-2" for="restname">Restaurant Name:</label>
                     <div class="col-sm-10">
-                        <input type="text" onChange = {this.changeHandler} value={this.state.restname} class="form-control" id="restname" placeholder="Restaurant Name" name="restname"/>
+                        <input type="text" onChange = {this.changeHandler} value={this.state.restname} class="form-control" id="restname" placeholder="Restaurant Name" name="restname" disabled/>
                     </div>
                     </div>
                     <div class="form-group">
@@ -143,18 +133,6 @@ class OwnerProfile extends Component{
                     <label class="control-label col-sm-2" for="cuisine">Cuisine:</label>
                     <div class="col-sm-10">
                         <input type="text" onChange = {this.changeHandler} value={this.state.cuisine} class="form-control" id="cuisine" placeholder="cuisine" name="cuisine"/>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                    <label class="control-label col-sm-2" for="password">Password:</label>
-                    <div class="col-sm-10">
-                        <input type="password" onChange = {this.changeHandler} value={this.state.password} class="form-control" id="password" placeholder="Password" name="password"/>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                    <label class="control-label col-sm-2" for="confirmpassword">Confirm Password:</label>
-                    <div class="col-sm-10">
-                        <input type="password" onChange = {this.changeHandler} value={this.state.confirmpassword} class="form-control" id="confirmpassword" placeholder="Confirm Password" name="confirmpassword"/>
                     </div>
                     </div>
                     

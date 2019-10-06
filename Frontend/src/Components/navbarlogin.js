@@ -25,6 +25,8 @@ class NavBarLogin extends Component{
         cookie.remove('cookie', { path: '/' });
         cookie.remove('cookieemail', { path: '/' });
         cookie.remove('cookiename', { path: '/' });
+        cookie.remove('cookierestname', { path: '/' });
+        localStorage.clear();
     }
 
     render() {

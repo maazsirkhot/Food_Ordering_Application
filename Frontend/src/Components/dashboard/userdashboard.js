@@ -69,9 +69,9 @@ class UserDashboard extends Component{
         var searchDetails = this.state.searchResults.map(result => {
                 return(
                     <tr>
-                        <td>{result.rest_name}</td>
-                        <td>{result.cuisine}</td>
-                        <td><button value={result.rest_name} onClick={this.restaurantpage} class="btn btn-danger">View Restaurant</button></td>
+                        <td>{result.REST_NAME}</td>
+                        <td>{result.CUISINE}</td>
+                        <td><button value={result.REST_NAME} onClick={this.restaurantpage} class="btn btn-danger">View Restaurant</button></td>
                     </tr>
                 );
         });
@@ -97,8 +97,8 @@ class UserDashboard extends Component{
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link text-dark font-italic bg-light">
-                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Past Orders
+                    <a href="/UserOrders" class="nav-link text-dark font-italic bg-light">
+                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Orders
                     </a></li> 
             </ul>
             </div>

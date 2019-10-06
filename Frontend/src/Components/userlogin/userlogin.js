@@ -13,7 +13,8 @@ class UserLogin extends Component{
         this.state = {
             username : "",
             password : "",
-            logincheck : ""
+            logincheck : "",
+            errorMessage : ""
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -46,7 +47,7 @@ class UserLogin extends Component{
                     })
                 } else {
                     this.setState({
-                        logincheck : false
+                        logincheck : false,
                     })
                 }
             })
@@ -55,7 +56,7 @@ class UserLogin extends Component{
                 this.setState({
                     logincheck : false
                 })
-                alert("Login Failed. Please try again!");
+                alert("Login failed. Try again!");
             })
         }
         
@@ -78,12 +79,11 @@ class UserLogin extends Component{
                 
                 <div class="card-body">
                 <h5 class="card-title text-center">User Login</h5>
-            
-                <form class="form-signin" >
+                <form class="form-signin">
                     
                     
                     <div class="form-label-group">
-                    <input type="email" id="username" class="form-control"  onChange = {this.changeHandler} name="username" placeholder="Email address" required/>
+                    <input type="email" id="email" class="form-control"  onChange = {this.changeHandler} name="username" placeholder="Email address" required/>
                     <label for="email">Email address</label>
                     </div>
                     <hr/>
@@ -92,8 +92,9 @@ class UserLogin extends Component{
                     <label for="password">Password</label>
                     </div>              
                     
-                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" onClick = {this.onSubmit}>Login</button>
-                </form>
+                    </form>
+                
+                <button class="btn btn-lg btn-danger text-uppercase" type="submit" onClick = {this.onSubmit}>Login</button>
                 </div>
                 </div> 
                 </div>

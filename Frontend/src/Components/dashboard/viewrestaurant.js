@@ -28,7 +28,7 @@ class ViewRestaurant extends Component {
         this.setState({
             user : username
         })
-        console.log(this.state.restname);
+        console.log(this.state.user);
         const data = {
             restname : this.state.restname
         }
@@ -37,6 +37,7 @@ class ViewRestaurant extends Component {
         .then(response => {
             console.log("Response Status: " + response.status);
             if(response.status === 200){
+                console.log(response.data);
                 this.setState({
                     menu : response.data,
                     menuCheck : true
@@ -61,7 +62,9 @@ class ViewRestaurant extends Component {
 
     onsubmit(e){
         e.preventDefault();
-
+        if(this.state.totalprice == 0){
+            alert("Please select an item");
+        }  else {
         console.log("Inside Cart Submit");
         //console.log(this.state);
         var carts = [];
@@ -86,7 +89,6 @@ class ViewRestaurant extends Component {
         })
 
         console.log(carts);
-        //console.log(carts);
         
         if(carts.length == 0){
             this.setState({
@@ -104,10 +106,13 @@ class ViewRestaurant extends Component {
                 if(response.status === 200){
                     console.log("Cart ID: " + response.data.cartid);
                     localStorage.setItem('cartid', response.data.cartid);
+                    alert("Order Placed Successfully");
                     this.setState({
                         postStatus : true,
-                        totalprice : response.data.totalprice
+                        totalprice : response.data.totalprice,
+                        orderplaced : "true"
                     })
+                    
                     //console.log(this.state.totalprice);
                     
                 } else {
@@ -119,21 +124,26 @@ class ViewRestaurant extends Component {
             })
         }
         
-
+    }
 
     }
 
     placeorder(e){
-        if(this.state.totalprice == 0){
-           alert("Please select an item");
-        }
-        else {
+            var total = 0;
+            var element;
+            for (element in this.state){
+                if(element == "restname" || element == "menu" || element == "menuCheck" || element == "user" || element == "postStatus" || element == "totalprice" || element == "orderplaced"){
+                    continue;
+                } else {
+                    var quantity = this.state[element][1];
+                    var itemprice = this.state[element][2];
+                    var price = quantity * itemprice;
+                    total = total + price;
+                }
+            }
             this.setState({
-                orderplaced : "true"
+                totalprice : total
             })
-            console.log(this.state.orderplaced);
-            alert("Order Placed Successfully");
-        }
     }
 
     render(){
@@ -164,7 +174,7 @@ class ViewRestaurant extends Component {
 
         let redirectVar = null;
         if (this.state.orderplaced == "true" && localStorage.getItem("cartid")) {
-            redirectVar = <Redirect to="/UserDashboard" />;
+            redirectVar = <Redirect to="/UserOrders" />;
         }
 
 
@@ -181,8 +191,8 @@ class ViewRestaurant extends Component {
                     <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Profile
                     </a></li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link text-dark font-italic bg-light">
-                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Past Orders
+                    <a href="/UserOrders" class="nav-link text-dark font-italic bg-light">
+                    <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>Orders
                     </a></li> 
                 </ul>
                 </div>
@@ -195,9 +205,9 @@ class ViewRestaurant extends Component {
                     {menuDetails}        
                 </table>
                 
-                <button type = "submit"  onClick = {this.onsubmit} class="btn btn-danger">Calculate Total</button>
+                <button type = "submit"  onClick = {this.placeorder} class="btn btn-danger">Calculate Total</button>
                 <h3>Order Total : {this.state.totalprice}</h3>
-                <button type = "submit"  onClick = {this.placeorder} class="btn btn-danger">Place Order</button>  
+                <button type = "submit"  onClick = {this.onsubmit} class="btn btn-danger">Place Order</button>  
                 </div>
 
 

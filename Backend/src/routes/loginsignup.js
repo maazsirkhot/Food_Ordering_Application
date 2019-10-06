@@ -1,51 +1,43 @@
 var express = require('express');
 var pool = require('../helpers/pool');
 var router = express.Router();
-var crypt = require('../helpers/passwordEncryption');
+var encrypt = require('../helpers/passwordEncryption');
 
 router.route('/SignUpUser').post(function(req, res){
     var encryptPass;
     console.log("SignUp User");
     var signupData = {
-        "name": req.body.fname + " " + req.body.lname,
-        "email": req.body.email,
-        "password": req.body.password,
-        "mob": req.body.mob
+        "name": req.body.name,
+        "email": req.body.username,
+        "password": req.body.password
     }
     //password encryption
-    // encrypt.createHash(signupData.password, function (response){
-    //     encryptPass = response;
-    //     console.log("Encrypted Password is: " + encryptPass);
-    // }, function (err) {
-    //     console.log(err);
-    //   });
-    // // comparePass = "$2a$10$YRUYPHWJsA3xpwGKd7HchOX4YLDvqY9HmRlQC3/eLJm2ZomC2aEJW";
-
-    // encrypt.compareHash(signupData.password, encryptPass, function (err, checkMatch) {
-    //     if(checkMatch){
-    //         console.log("Password Matched");
-    //     }
-    // }, function (err) {
-    //     console.log(err);
-    //   });
-
-    let insertUser = "INSERT INTO users (name, username, password, contact) VALUES (?, ?, ?, ?)";
-    pool.query(insertUser, [signupData.name, signupData.email, signupData.password, signupData.mob, signupData.role], (err, result) => {
+    encrypt.createHash(signupData.password, function (response){
+        encryptPass = response;
+        console.log("Encrypted Password is: " + encryptPass);
+        let insertUser = "INSERT INTO USERS (NAME, USERNAME, PASSWORD) VALUES (?, ?, ?)";
+        pool.query(insertUser, [signupData.name, signupData.email, encryptPass], (err, result) => {
         if(err){
            console.log("Error occurred.")
-           res.status(400).send("Sign up unsuccessful");
+           res.status(401).send({responseMessage: 'Username already exists'});
         }
         else{
            console.log("User added to database");
-           res.status(200).send("User added");
+           res.status(200).send({message:"User SignUp successful"});
         }
     })
+    }, function (err) {
+        console.log(err);
+        res.status(401).send({responseMessage: 'Error Occurred'});
+    });
+
+    
 })
 
 router.route('/SignUpOwner').post(function(req, res){
     console.log("SignUp Owner");
     var signupData = {
-        "name": req.body.fname + " " + req.body.lname,
+        "name": req.body.name,
         "email": req.body.email,
         "password": req.body.password,
         "mob": req.body.mob,
@@ -53,22 +45,33 @@ router.route('/SignUpOwner').post(function(req, res){
         "restzip": req.body.restzip,
         "cuisine": req.body.cuisine
     }
-    var insertOwner = "INSERT INTO owners (ownername, owneremail, password, ownermob, rest_name, rest_zip, cuisine) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    pool.query(insertOwner, [signupData.name, signupData.email, signupData.password, signupData.mob, signupData.restname, signupData.restzip, signupData.cuisine], (err, result) => {
-        if(err){
-            console.log("Error occurred.");
-        }
-        else{
-            console.log("Owner added to database");
-            res.status(200).send("User added");
-        }
-    })
+
+    encrypt.createHash(signupData.password, function (response){
+        encryptPass = response;
+        console.log("Encrypted Password is: " + encryptPass);
+
+        var insertOwner = "INSERT INTO OWNERS (OWNERNAME, OWNEREMAIL, PASSWORD, OWNERMOB, REST_NAME, REST_ZIP, CUISINE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        pool.query(insertOwner, [signupData.name, signupData.email, encryptPass, signupData.mob, signupData.restname, signupData.restzip, signupData.cuisine], (err, result) => {
+            if(err){
+                console.log("Error occurred.");
+                res.status(401).send({responseMessage: 'Username already exists'});
+            }
+            else{
+                console.log("Owner added to database");
+                res.status(200).send("User added");
+            }
+        })
+    }, function (err) {
+        console.log(err);
+        res.status(401).send({responseMessage: 'Error Occurred'});
+    });
+      
 })
 
 router.route('/loginUser').post((req, res) => {
     var email = req.body.username;
     var password = req.body.password;
-    loginCheckQuery = "SELECT * FROM users WHERE username = ?";
+    loginCheckQuery = "SELECT * FROM USERS WHERE USERNAME = ?";
     pool.query(loginCheckQuery, [email], (err, result) => {
         if(err) {
             console.log("Error occurred.");
@@ -76,16 +79,26 @@ router.route('/loginUser').post((req, res) => {
         }
         else {
             console.log(result);
-            if(result.length > 0 && result[0].password == password){
-                res.cookie('cookie',"usercookie",{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookieemail',result[0].username,{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookiename',result[0].name,{maxAge: 900000, httpOnly: false, path : '/'});
-                req.session.user = result[0].username;
-                console.log("User Login successful");
-                res.writeHead(200, {
-                    'Content-Type': 'application/json'
-                });
-                res.end(JSON.stringify({message:"login success"}));
+            if(result.length > 0){
+                encrypt.compareHash(password, result[0].PASSWORD, function(err, isMatch) {
+                    if (isMatch && !err){
+                        res.cookie('cookie',"usercookie",{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('cookieemail',result[0].USERNAME,{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('cookiename',result[0].NAME,{maxAge: 900000, httpOnly: false, path : '/'});
+                        req.session.user = result[0].USERNAME;
+                        console.log("User Login successful");
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json'
+                        });
+                        res.end(JSON.stringify({message:"login success"}));
+                    } else {
+                        res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
+                        console.log("Authentication failed. Passwords did not match.");
+                    }
+                }, function (err) {
+                    console.log(err);
+                    res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
+                });  
             } else {
                 res.status(401).json({responseMessage: 'Invalid Credentials. Please try again'});
                 console.log("Invalid Credentials");
@@ -99,7 +112,7 @@ router.route('/loginOwner').post((req, res) => {
     var email = req.body.username;
     var password = req.body.password;
 
-    loginCheckQuery = "SELECT * FROM owners WHERE owneremail = ?";
+    loginCheckQuery = "SELECT * FROM OWNERS WHERE OWNEREMAIL = ?";
     pool.query(loginCheckQuery, [email], (err, result) => {
         if(err) {
             console.log("Error occurred.");
@@ -107,14 +120,26 @@ router.route('/loginOwner').post((req, res) => {
         }
         else {
             console.log(result);
-            if(result.length > 0 && result[0].password == password){
-                res.cookie('cookie',"ownercookie",{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookieemail',result[0].owneremail,{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookiename',result[0].ownername,{maxAge: 900000, httpOnly: false, path : '/'});
-                res.cookie('cookierestname',result[0].rest_name,{maxAge: 900000, httpOnly: false, path : '/'});
-                req.session.user = result[0].username;
-                console.log("Owner Login successful");
-                res.status(200).json({responseMessage: 'Login Successful'});
+            if(result.length > 0){
+                encrypt.compareHash(password, result[0].PASSWORD, function(err, isMatch){
+                    if (isMatch && !err){
+                        res.cookie('cookie',"ownercookie",{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('cookieemail',result[0].OWNEREMAIL,{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('cookiename',result[0].OWNERNAME,{maxAge: 900000, httpOnly: false, path : '/'});
+                        res.cookie('cookierestname',result[0].REST_NAME,{maxAge: 900000, httpOnly: false, path : '/'});
+                        req.session.user = result[0].USERNAME;
+                        console.log("Owner Login successful");
+                        res.status(200).json({responseMessage: 'Login Successful'});
+                    } else {
+                        res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
+                        console.log("Authentication failed. Passwords did not match.");
+                    }
+
+                }, function (err) {
+                    console.log(err);
+                    res.status(401).json({responseMessage: 'Authentication failed. Passwords did not match.'})
+                });
+
             } else {
                 res.status(401).json({responseMessage: 'Invalid Credentials. Please try again'});
                 console.log("Invalid Credentials");

@@ -9,22 +9,23 @@ router.route('/OwnerProfile').post(function(req, res){
     var signupData = {
         "name": req.body.name,
         "email": req.body.email,
-        "password": req.body.password,
         "mob": req.body.mob,
-        "restname": req.body.restname,
         "restzip": req.body.restzip,
         "cuisine": req.body.cuisine
     }
-    var updateOwner = "UPDATE owners SET ownername = ?, owneremail = ?, ownermob = ?, rest_name = ?, rest_zip = ?, cuisine = ?, password = ? WHERE (owneremail = ?)";
-    pool.query(updateOwner, [signupData.name, signupData.email, signupData.mob, signupData.restname, signupData.restzip, signupData.cuisine, signupData.password, signupData.email], (err, result) => {
+
+    var updateOwner = "UPDATE OWNERS SET OWNERNAME = ?, OWNEREMAIL = ?, OWNERMOB = ?, REST_ZIP = ?, CUISINE = ? WHERE (OWNEREMAIL = ?)";
+    pool.query(updateOwner, [signupData.name, signupData.email, signupData.mob, signupData.restzip, signupData.cuisine, signupData.email], (err, result1) => {
         if(err){
             console.log("Error occurred.");
+            res.status(400).json({responseMessage: 'Error Occurred'});
         }
         else{
             console.log("Owner Profile Updated");
-            res.status(200).send("Profile Updated");
+            res.status(200).json({responseMessage: 'Profile Updated'});
         }
-    })
+    })  
+
 })
 
 router.route('/UserProfile').post(function(req, res){
@@ -32,14 +33,14 @@ router.route('/UserProfile').post(function(req, res){
     var signupData = {
         "name": req.body.name,
         "email": req.body.email,
-        "password": req.body.password,
         "mob": req.body.contact,
         "address": req.body.address
     }
-    var updateOwner = "UPDATE users SET name = ?, username = ?, contact = ?, address = ?, password = ? WHERE (username = ?)";
-    pool.query(updateOwner, [signupData.name, signupData.email, signupData.mob, signupData.address, signupData.password, signupData.email], (err, result) => {
+    var updateUser = "UPDATE USERS SET NAME = ?, USERNAME = ?, CONTACT = ?, ADDRESS = ? WHERE (USERNAME = ?)";
+    pool.query(updateUser, [signupData.name, signupData.email, signupData.mob, signupData.address, signupData.email], (err, result) => {
         if(err){
             console.log("Error occurred.");
+            res.status(400).send("User does not exist");
         }
         else{
             console.log("User Profile Updated");
@@ -53,10 +54,11 @@ router.route('/GetUserProfile').post(function(req, res){
 
     var username = req.body.username;
 
-    var getProfileQuery = "select * from users where username = ?";
+    var getProfileQuery = "SELECT * FROM USERS WHERE USERNAME = ?";
     pool.query(getProfileQuery, [username], (err, result) => {
         if(err){
             console.log("Error with database");
+            res.status(400).json({responseMessage: 'Error Occurred'});
         } else {
             if(result.length > 0){
                 res.status(200).send(result[0]);
@@ -74,7 +76,7 @@ router.route('/GetOwnerProfile').post(function(req, res){
 
     var username = req.body.email;
 
-    var getProfileQuery = "select * from owners where owneremail = ?";
+    var getProfileQuery = "SELECT * FROM OWNERS WHERE OWNEREMAIL = ?";
     pool.query(getProfileQuery, [username], (err, result) => {
         if(err){
             console.log("Error with database");

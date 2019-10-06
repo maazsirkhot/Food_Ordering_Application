@@ -7,7 +7,7 @@ router.route('/UserDashboard').post(function(req, res){
     console.log("Inside UserDashboard API");
 
     var searchRestaurant = "%" + req.body.itemname + "%";
-    searchQuery = "SELECT distinct(i.rest_name), o.cuisine from items i, owners o WHERE i.itemname like ?";
+    searchQuery = "SELECT DISTINCT(I.REST_NAME), O.CUISINE FROM ITEMS I left join OWNERS O ON I.REST_NAME=O.REST_NAME WHERE I.ITEMNAME LIKE ?";
     pool.query(searchQuery, [searchRestaurant], (err, result) => {
         if(err) {
             console.log("Error occurred.");
