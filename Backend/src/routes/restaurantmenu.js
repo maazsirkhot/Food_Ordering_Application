@@ -85,6 +85,7 @@ router.route('/updateMenu').post(function(req, res){
             }
         })
     } else if (itemstatus == 'DELETE'){
+        console.log("Delete Query");
         deleteItemQuery = 'DELETE FROM ITEMS WHERE REST_NAME = ? AND ITEMNAME = ?';
         pool.query(deleteItemQuery, [rest_name, itemname], (err, result1) => {
             if(err){
