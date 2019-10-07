@@ -29,9 +29,6 @@ class UserDashboard extends Component{
 
     onSubmit = (e) => {
         e.preventDefault();
-        if (this.state.itemname == "") {
-            alert("Search Field cannot be empty");
-        } else {
             //console.log(this.state.itemname);
             const data = {
                 itemname : this.state.itemname
@@ -53,7 +50,6 @@ class UserDashboard extends Component{
                     console.log("No Items found");
                 }
             })
-        }
     }
 
     restaurantpage = (e) => {

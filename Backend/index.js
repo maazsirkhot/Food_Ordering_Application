@@ -1,4 +1,5 @@
 const port = process.env.PORT || 3001;
+const rooturl = "http://localhost:3000";
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -30,7 +31,7 @@ app.use(session({
 }));
 
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', rooturl);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
@@ -60,7 +61,7 @@ var cartorder = require('./src/routes/cartorder');
 
 app.use(express.static('public'));
 var basePath = '/';
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: rooturl, credentials: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
