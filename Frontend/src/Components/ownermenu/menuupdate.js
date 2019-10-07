@@ -39,55 +39,65 @@ class MenuUpdate extends Component{
 
     onSubmit(e){
         e.preventDefault();
-        const data = {
-            itemname : this.state.itemname,
-            itemdescription : this.state.itemdescription,
-            itemprice : this.state.itemprice,
-            section : this.state.section,
-            restname : this.state.restname,
-            itemstatus : "NEW"
-            
-        }
-        axios.post(rooturl + '/updateMenu', data)
-        .then(response => {
-            console.log("Response Status: " + response.status);
-            if(response.status === 200){
-                this.setState({
-                    updateStatus : true
-                })
-                alert("Profile Updated Successfully");
-            } else {
-                this.setState({
-                    updateStatus : false
-                })
-                alert("Error Occurred. Try again!");
+        if(this.state.itemname == "" || this.state.itemprice == "" || this.state.section == ""){
+            alert("Please fill all fields");
+        } else {
+            const data = {
+                itemname : this.state.itemname,
+                itemdescription : this.state.itemdescription,
+                itemprice : this.state.itemprice,
+                section : this.state.section,
+                restname : this.state.restname,
+                itemstatus : "NEW"
+                
             }
-        })
+            axios.post(rooturl + '/updateMenu', data)
+            .then(response => {
+                console.log("Response Status: " + response.status);
+                if(response.status === 200){
+                    this.setState({
+                        updateStatus : true
+                    })
+                    alert("Item added Successfully");
+                } else {
+                    this.setState({
+                        updateStatus : false
+                    })
+                    alert("Error Occurred. Try again!");
+                }
+            })
+        }
+        
     }
 
     onDelete(e){
         e.preventDefault();
-        const data = {
-            restname : this.state.restname,
-            itemname : this.state.deleteitemname,
-            itemstatus : "DELETE"
-        }
-        console.log(this.state.restname)
-        axios.post(rooturl + '/updateMenu', data)
-        .then(response => {
-            console.log("Response Status: " + response.status);
-            if(response.status === 200){
-                this.setState({
-                    updateStatus : true
-                })
-                alert("Item Deleted Successfully");
-            } else {
-                this.setState({
-                    updateStatus : false
-                })
-                alert("Error Occurred. Try again!");
+        if(this.state.deleteitemname == ""){
+            alert("Please provide a valid item");
+        } else {
+            const data = {
+                restname : this.state.restname,
+                itemname : this.state.deleteitemname,
+                itemstatus : "DELETE"
             }
-        })
+            console.log(this.state.restname)
+            axios.post(rooturl + '/updateMenu', data)
+            .then(response => {
+                console.log("Response Status: " + response.status);
+                if(response.status === 200){
+                    this.setState({
+                        updateStatus : true
+                    })
+                    alert("If item exists, it was deleted Successfully");
+                } else {
+                    this.setState({
+                        updateStatus : false
+                    })
+                    alert("Error Occurred. Try again!");
+                }
+            })
+        }
+        
     }
 
 
@@ -135,7 +145,7 @@ class MenuUpdate extends Component{
 
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <input type="text" onChange = {this.changeHandler} class="form-control" id="itemprice" placeholder="Price" name="itemprice" required/>
+                        <input type="number" onChange = {this.changeHandler} class="form-control" id="itemprice" placeholder="Price" name="itemprice"  step="0.01" required/>
                     </div>
                 </div>
 

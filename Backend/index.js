@@ -1,5 +1,5 @@
 const port = process.env.PORT || 3001;
-const rooturl = "http://localhost:3000";
+const rooturl = "http://ec2-54-183-51-217.us-west-1.compute.amazonaws.com:3000";
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

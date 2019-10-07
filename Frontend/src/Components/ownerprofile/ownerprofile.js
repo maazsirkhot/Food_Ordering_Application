@@ -115,7 +115,7 @@ class OwnerProfile extends Component{
                     <div class="form-group">
                     <label class="control-label col-sm-2" for="ownermob">Contact:</label>
                     <div class="col-sm-10">
-                        <input type="text" onChange = {this.changeHandler} value={this.state.mob} class="form-control" id="mob" placeholder="Contact" name="mob"/>
+                        <input type="number" onChange = {this.changeHandler} value={this.state.mob} class="form-control" id="mob" placeholder="Contact" name="mob"/>
                     </div>
                     </div>
                     <div class="form-group">

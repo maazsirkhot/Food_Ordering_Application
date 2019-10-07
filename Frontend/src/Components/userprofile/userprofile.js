@@ -112,7 +112,7 @@ class UserProfile extends Component{
                     <div class="form-group">
                     <label class="control-label col-sm-2" for="contact">Contact:</label>
                     <div class="col-sm-10">
-                        <input type="text" onChange = {this.changeHandler} value={this.state.contact} class="form-control" id="contact" placeholder="Contact" name="contact" required/>
+                        <input type="number" onChange = {this.changeHandler} value={this.state.contact} class="form-control" id="contact" placeholder="Contact" name="contact" required/>
                     </div>
                     </div>
                     <div class="form-group">
