@@ -96,7 +96,20 @@ router.route('/updateMenu').post(function(req, res){
                 res.status(200).json({responseMessage: 'Item deleted from restaurant'});
             }
         })
-    } else {
+    } else if (itemstatus == 'DELETESECTION'){
+        console.log("Delete Query");
+        deleteItemQuery = 'DELETE FROM ITEMS WHERE REST_NAME = ? AND SECTION = ?';
+        pool.query(deleteItemQuery, [rest_name, section], (err, result1) => {
+            if(err){
+                console.log("Database error occurred");
+                res.status(400).json({responseMessage: 'Some Error occurred with database delete'});
+            } else {
+                console.log("Item deleted from restaurant");
+                res.status(200).json({responseMessage: 'Section deleted from restaurant'});
+            }
+        })
+    }
+    else {
         updateItemQuery = 'UPDATE ITEMS SET ITEMNAME = ?, ITEMDESCRIPTION = ?, ITEMPRICE = ?, SECTION = ? WHERE (REST_NAME = ?) AND (ITEMNAME = ?)';
         pool.query(updateItemQuery, [newitemname, itemdescription, itemprice, section, rest_name, itemname], (err, result2) => {
             if(err){

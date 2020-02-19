@@ -14,11 +14,14 @@ class UserDashboard extends Component{
             restname : "",
             searchResults : [],
             itemname : "",
-            searchCheck : "false"
+            searchCheck : "false",
+            cuisinesFilter : [],
+            option : ""
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.restaurantpage = this.restaurantpage.bind(this);
+        this.applyFilter = this.applyFilter.bind(this);
     }
 
     changeHandler = (e) => {
@@ -40,9 +43,10 @@ class UserDashboard extends Component{
                 if(response.status === 200){
                     this.setState({
                         searchResults : response.data,
-                        searchCheck : true
+                        searchCheck : true,
+                        cuisinesFilter : response.data
                     })
-                    console.log(this.state.searchResults);
+                    console.log(this.state.searchResults, this.state.cuisinesFilter);
                 } else {
                     this.setState({
                         searchCheck : false
@@ -60,6 +64,28 @@ class UserDashboard extends Component{
         })
     }
 
+    applyFilter = (e) => {
+        e.preventDefault();
+        var filter = this.state.option;
+        if(filter == "All" || filter == ""){
+            this.setState({
+                searchResults : this.state.cuisinesFilter
+            })
+            console.log(this.state.searchResults);
+        } else {
+            var allResults = this.state.cuisinesFilter;
+            var filteredResults = allResults.filter(rest => {
+                return rest.CUISINE == filter;
+            })
+            this.setState({
+                searchResults : filteredResults
+            })
+            console.log(this.state.searchResults);
+        }
+
+
+    }
+
 
     
     render(){
@@ -71,6 +97,12 @@ class UserDashboard extends Component{
                         <td><button value={result.REST_NAME} onClick={this.restaurantpage} class="btn btn-danger">View Restaurant</button></td>
                     </tr>
                 );
+        });
+
+        var filterResults = this.state.cuisinesFilter.map(result => {
+            return(
+                <option value={result.CUISINE}>{result.CUISINE}</option>
+            );
         });
 
         
@@ -105,6 +137,19 @@ class UserDashboard extends Component{
                 <div class="input-group-append">
                 <button class="btn btn-danger" type="submit" onClick = {this.onSubmit}>Search</button>  
                 </div>
+                
+                <form>
+
+                
+                <div className="g-input-control btn-danger">
+                    <select className="btn-danger" onChange = {(e) => this.setState({option : e.target.value})} value = {this.state.option} >
+                    <option value="All" selected="selected">All</option>
+                        {filterResults}
+                    </select>
+                    <button class="btn btn-danger" type="submit" onClick = {this.applyFilter}>Apply Filter</button>
+                </div>
+                </form>
+
             </div>
                 <table class="table table-hover">
                     <thead>

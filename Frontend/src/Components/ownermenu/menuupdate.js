@@ -17,11 +17,13 @@ class MenuUpdate extends Component{
             section : "",
             restname : "",
             updateStatus : "",
-            deleteitemname : ""
+            deleteitemname : "",
+            deletesection : ""
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onDeleteSection = this.onDeleteSection.bind(this);
     }
 
     componentWillMount(){
@@ -89,6 +91,36 @@ class MenuUpdate extends Component{
                         updateStatus : true
                     })
                     alert("If item exists, it was deleted Successfully");
+                } else {
+                    this.setState({
+                        updateStatus : false
+                    })
+                    alert("Error Occurred. Try again!");
+                }
+            })
+        }
+        
+    }
+
+    onDeleteSection(e){
+        e.preventDefault();
+        if(this.state.deletesection == ""){
+            alert("Please provide a valid item");
+        } else {
+            const data = {
+                restname : this.state.restname,
+                section : this.state.deletesection,
+                itemstatus : "DELETESECTION"
+            }
+            console.log(this.state.restname)
+            axios.post(rooturl + '/updateMenu', data)
+            .then(response => {
+                console.log("Response Status: " + response.status);
+                if(response.status === 200){
+                    this.setState({
+                        updateStatus : true
+                    })
+                    alert("If section exists, it was deleted Successfully");
                 } else {
                     this.setState({
                         updateStatus : false
@@ -168,6 +200,18 @@ class MenuUpdate extends Component{
                 </div>
                 <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-danger" onClick={this.onDelete}>Delete Item</button>
+                        <button type="reset" class="btn btn-danger">Clear</button>
+                    </div>
+                </form>
+                <form>
+                <h3>Delete Section</h3>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input type="text" onChange = {this.changeHandler} class="form-control" id="itemname" placeholder="Section Name" name="deletesection" required/>
+                    </div>
+                </div>
+                <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-danger" onClick={this.onDeleteSection}>Delete Item</button>
                         <button type="reset" class="btn btn-danger">Clear</button>
                     </div>
                 </form>
